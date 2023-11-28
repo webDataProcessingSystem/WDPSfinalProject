@@ -21,7 +21,7 @@ If the answer is an entity, you might check if the entity exists in a knowledge 
 Use NER techniques to identify entities in both the input text (A) and the raw text from the language model (B).
 Compare the entities from both texts to see if there are any differences or additional entities in the raw text.
 
-6.Implement and Test:
+6. Implement and Test:
 Combine all the steps into a cohesive program.
 Test the system with various inputs to ensure it behaves as expected.
 Address any issues or refine the system based on the test results.
