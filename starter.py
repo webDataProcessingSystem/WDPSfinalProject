@@ -1,7 +1,7 @@
-from ctransformers import AutoModelForCausalLM
-repository = 'TheBloke/Llama-2-13B-chat-GGUF'
-model_file = 'llama-2-13b-chat.Q4_K_M.gguf'
-llm = AutoModelForCausalLM.from_pretrained(repository, model_file=model_file, model_type='llama')
+import gen_raw_answer
+import spacy_ner
+import entity_linking
+
 
 def starter(file_name):
     # clear answer file
@@ -15,12 +15,20 @@ def starter(file_name):
             question = line.split('    ')[1]
             print(question_id)
             print(question)
-            # generate answer
-            raw_answer = llm(question)
-            print('Raw Answer: ' + raw_answer)
-            # write answer
-            with open('answer.txt', 'a') as answer_file:
-                answer_file.write(question_id + '    R' + '"' + raw_answer + '"' + '\n')
+            # generate raw answer
+            raw_answer = gen_raw_answer(question)
+            
+            # ----Entity Extraction----
+            # extract entities
+            entities_answer = spacy_ner.ner(raw_answer)
+            entities_question = spacy_ner.ner(question)
+            # generate distinct entities
+            distinct_entities = entities_question
+            for entity in entities_answer:
+                if entity not in distinct_entities:
+                    distinct_entities.append(entity)
+            print(distinct_entities)
+            entity_liking(distinct_entities)
 
 
 starter('question.txt')
