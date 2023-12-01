@@ -30,9 +30,9 @@ def extract_entities_from_json(json_file,train_file):
             question_tokens = tokenize(question)
             question_tokens = nlp(question)
             entities = ', '.join([f"{ent.text} ({ent.label_})" for ent in question_tokens.ents])
-            raw_answer=tokenize(raw_answer)
-            raw_answer=nlp(raw_answer)
-            extracted_answer = ', '.join([f"{ent.text} ({ent.label_})" for ent in raw_answer.ents])
+            answers_tokens=tokenize(raw_answer)
+            answers_tokens=nlp(answers_tokens)
+            extracted_answer = ', '.join([f"{ent.text} ({ent.label_})" for ent in answers_tokens.ents])
             csv_writer.writerow([question, answers, entities, raw_answer, extracted_answer])
 
 
