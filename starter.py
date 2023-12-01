@@ -16,11 +16,11 @@ def starter(file_name):
             print(question_id)
             print(question)
             # generate answer
-            answer = llm(question)
-            print('Raw Answer: ' + answer)
+            raw_answer = llm(question)
+            print('Raw Answer: ' + raw_answer)
             # write answer
             with open('answer.txt', 'a') as answer_file:
-                answer_file.write(question_id + '    R' + '"' + answer + '"' + '\n')
+                answer_file.write(question_id + '    R' + '"' + raw_answer + '"' + '\n')
 
 
 starter('question.txt')
