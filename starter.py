@@ -19,16 +19,11 @@ def starter(file_name):
             raw_answer = gen_raw_answer(question)
             
             # ----Entity Extraction----
-            # extract entities
             entities_answer = spacy_ner.ner(raw_answer)
             entities_question = spacy_ner.ner(question)
-            # generate distinct entities
-            distinct_entities = entities_question
-            for entity in entities_answer:
-                if entity not in distinct_entities:
-                    distinct_entities.append(entity)
-            print(distinct_entities)
-            entity_liking(distinct_entities)
+
+            # ----Entity Linking----
+            entity_linking(entities_question, entities_answer)
 
 
 starter('question.txt')
