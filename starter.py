@@ -16,7 +16,7 @@ def starter(file_name):
             print(question_id)
             print(question)
             # generate raw answer
-            raw_answer = gen_raw_answer(question)
+            raw_answer = gen_raw_answer.gen_raw_answer(question_id, question)
             
             # ----Entity Extraction----
             entities_answer = spacy_ner.ner(raw_answer)
