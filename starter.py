@@ -23,7 +23,7 @@ def starter(file_name):
             entities_question = spacy_ner.ner(question)
 
             # ----Entity Linking----
-            entity_linking(entities_question, entities_answer)
+            entity_linking.entity_linking(entities_question, entities_answer)
 
 
 starter('question.txt')
