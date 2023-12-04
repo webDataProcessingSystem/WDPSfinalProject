@@ -4,7 +4,7 @@ from ner import extract_entities_from_json
 
 #model and tokenizer path
 tokenizer_path=r"D:\DZLY6\P2\WEB\model\tokenizer.json"
-model_path = r"D:\DZLY6\P2\WEB\model\pytorch_model-00001-of-00015.bin"
+model_path = r"D:\DZLY6\P2\WEB\model"
 
 
 #dataset and extact entities path
