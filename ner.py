@@ -5,14 +5,18 @@ import re
 nlp = spacy.load("en_core_web_sm")
 import json
 import csv
-
+from transformers import LlamaForCausalLM, LlamaTokenizer
  
+
 
 def tokenize(text):
     # break text into tokens
     return re.findall(r'\b\w+\b', text.lower())
 
-def extract_entities_from_json(json_file,train_file):
+def extract_entities_from_json(json_file,train_file,model_path,tokenizer_path):
+    # tokenizer = LlamaTokenizer.from_pretrained(tokenizer_path)
+    model = LlamaForCausalLM.from_pretrained(model_path)
+    model.eval()
     with open(json_file, 'r', encoding='utf-8') as file:
         data = json.load(file)
     #open output file
@@ -23,7 +27,7 @@ def extract_entities_from_json(json_file,train_file):
         for item in data:
             question = item['question']
             answers = item['answer']
-            raw_answer = llm(question)
+            raw_answer = model(question)
             # tokenize question
             question_tokens = tokenize(question)
             question_tokens = nlp(question)
