@@ -5,10 +5,8 @@ import re
 nlp = spacy.load("en_core_web_sm")
 import json
 import csv
-from ctransformers import AutoModelForCausalLM
-repository = 'TheBloke/Llama-2-13B-chat-GGUF'
-model_file = 'llama-2-13b-chat.Q4_K_M.gguf'
-llm = AutoModelForCausalLM.from_pretrained(repository, model_file=model_file, model_type='llama')
+
+ 
 
 def tokenize(text):
     # break text into tokens
@@ -37,10 +35,5 @@ def extract_entities_from_json(json_file,train_file):
 
 
 
-
-
-json_file = 'D:\DZLY6\P2\WEB\Ass\GrailQA_v1.0\GrailQA_v1.0\grailqa_v1.0_train.json'
-output_file = r'D:\DZLY6\P2\WEB\Ass\train.csv'
-extract_entities_from_json(json_file,output_file)
 
 
