@@ -2,9 +2,9 @@
 from ner import extract_entities_from_json
 
 
-#model and tokenizer path
+# #model and tokenizer path
 tokenizer_path=r"D:\DZLY6\P2\WEB\model\tokenizer.json"
-model_path = r"D:\DZLY6\P2\WEB\model"
+model_path = r"D:\DZLY6\P2\WEB\model_13b"
 
 
 #dataset and extact entities path
