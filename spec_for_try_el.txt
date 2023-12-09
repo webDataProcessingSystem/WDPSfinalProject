@@ -1,3 +1,9 @@
+Process:
+1. [DONE] NER(Spacy library): text -> entity
+2. [DONE] Generate query sentence: entity -> query
+3. [DONE] Query the dbpedia and get the candidates: query -> candidates
+4. [TODO] filtering out the incorrect candidates according to the context/most popular/relation....
+
 ENTITY EXTRACTION
 
 [test]
