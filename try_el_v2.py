@@ -126,7 +126,7 @@ def generate_candidate(query: str) -> dict:
     sparql.setQuery(query)
     sparql.setTimeout(180)
 
-    result = None
+    results = None
     for _ in range(2):
         try:
             results = sparql.query().convert()     
@@ -248,8 +248,9 @@ for ent in entity_list:
     query = build_SPARQL_query(ent[0], rdf_type_dict[ent[1]])
     candidate_dict = generate_candidate(query)
     print(ent[0])
-    for cand in candidate_dict.items():
-        print(cand)
+    if candidat_dict is not None:
+        for cand in candidate_dict.items():
+            print(cand)
         #print("\n")
     #print(get_most_refer_cand(ent[0], candidate_dict))
     
