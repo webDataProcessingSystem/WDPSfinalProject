@@ -1,13 +1,10 @@
 
-from ner import extract_entities_from_json
-
+from clean_trainOWN import generate_answer_and_extract_entities 
 
 # #model and tokenizer path
-tokenizer_path=r"D:\DZLY6\P2\WEB\model\tokenizer.json"
-model_path = r"D:\DZLY6\P2\WEB\model_13b"
+# tokenizer_path=r"D:\DZLY6\P2\WEB\model\tokenizer.json"
+model_path = r"D:\DZLY6\P2\WEB\model_13b\llama-2-13b-chat.Q4_K_M.gguf"
+generate_csv_path=r"D:\DZLY6\P2\WEB\dataset\WDPS_GENDATASET.CSV"
+original_file=r"D:\DZLY6\P2\WEB\dataset\WDPS_DATASET.CSV"
 
-
-#dataset and extact entities path
-json_file = 'D:\DZLY6\P2\WEB\Ass\GrailQA_v1.0\GrailQA_v1.0\grailqa_v1.0_train.json'
-output_file = r'D:\DZLY6\P2\WEB\Ass\train.csv'
-extract_entities_from_json(json_file,output_file,model_path,tokenizer_path) //get llm answer, extract entities from question and answer
+generate_answer_and_extract_entities(original_file,generate_csv_path,model_path)

@@ -1,4 +1,3 @@
-import spacy
 import re
 import pandas as pd
 import csv
@@ -51,4 +50,3 @@ def generate_answer_and_extract_entities(original_file,train_file,model_path):
 
             csv_writer.writerow([question,original_answer,clean_question,raw_answer])
         
-generate_answer_and_extract_entities(r"D:\DZLY6\P2\WEB\dataset\WDPS_DATASET.CSV",r"D:\DZLY6\P2\WEB\dataset\WDPS_GENDATASET.CSV",r"D:\DZLY6\P2\WEB\model_13b\llama-2-13b-chat.Q4_K_M.gguf")
