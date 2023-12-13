@@ -4,6 +4,9 @@ import nltk
 from nltk.corpus import stopwords
 import string
 from bs4 import BeautifulSoup
+from fake_useragent import UserAgent
+import time
+import math
 
 wiki_url = "https://en.wikipedia.org/w/api.php"
 
@@ -85,17 +88,48 @@ def cal_jaccard(token_list1: list, token_list2: list) -> float:
     max_value = len(token_set2.union(token_set2))
     return min_value/max_value
     
-def get_wiki_page(url: str):
-    response = requests.get(url).text
-    soup = BeautifulSoup(response, 'lxml')
+def get_wiki_intro(url: str):
+    """
+    get the wiki introduction via bs
+    """
+    response = requests.get(url)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, 'html.parser')
+        intro_div = soup.find("div", {"class": "mw-content-ltr mw-parser-output"})
+        intro_para = intro_div.find_all("p")[:4]
 
-    print(soup)
-    
+        intro_text = "\n".join([p.get_text() for p in intro_para])
+        print(intro_text)
+    else:
+        print("error, failed to fetch wiki page.\n")
+        return None
 
+def cal_coherence_ngd(w1: str, w2: str):
+    # N = number of results("the")
+    N = 25270000000.0
+    N = math.log(N, 2)
+    if w1 != w2:
+        f_w1 = math.log(num_of_results(w1), 2)
+        f_w2 = math.log(num_of_results(w2), 2)
+        f_w1_w2 = math.log(num_of_results(w1 + " " + w2), 2)
+        res = (max(f_w1, f_w2) - f_w1_w2) / (N - min(f_w1, f_w2))
+        return res
+    else:
+        return 0
 
+def num_of_results(entity: str):
+    headers = {'User-Agent': UserAgent().firefox}
+    #time.sleep(5)
+    response = requests.get("https://www.google.com/search?q={}".format(entity.replace(" ", "+")), headers= headers)
+    if response.status_code == 200:
+        soup = BeautifulSoup(response.text, "lxml")
+        res = soup.find('div', {'id': 'result-stats'})
+        return res.text.split()[1] #int(res.text.replace(".", "").split()[1])
+    return None
 
 text = "Yes, Managua is the capital city of Nicaragua."
 entity = "Managua"
 url = "http://en.wikipedia.org/wiki/National_Assembly_(Venezuela)"
-get_wiki_page(url)
+#get_wiki_intro(url)
+print(num_of_results(entity))
 #print(cal_distance(text, entity))
