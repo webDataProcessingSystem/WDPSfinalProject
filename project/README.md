@@ -23,4 +23,6 @@ This is a pratical assignmnet for Web Data Processing Systems course.
 ## Usage of this problem
 ### Installation
 ### How to use in terminal?
-`python starter.py -i input.txt [output.txt] [-v]`
+```
+python starter.py -i input.txt [output.txt] [-v]
+```
