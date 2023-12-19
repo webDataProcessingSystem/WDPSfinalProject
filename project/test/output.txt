@@ -1,0 +1,5 @@
+question-001	R"Most people think Managua is the capital of Nicaragua. However, Managua is not the capital of Nicaragua."
+question-001	A"no"
+question-001	C"incorrect"
+question-001	E"Nicaragua"	"https://en.wikipedia.org/wiki/Nicaragua"
+question-001	E"Nicaragua"	"https://en.wikipedia.org/wiki/Nicaragua"
