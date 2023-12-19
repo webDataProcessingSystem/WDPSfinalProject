@@ -22,7 +22,17 @@ This is a pratical assignmnet for Web Data Processing Systems course.
 > National Assembly<TAB>https://en.wikipedia.org/wiki/National_Assembly_(Nicaragua) <br />
 ## Usage of this problem
 ### Installation
-### How to use in terminal?
+```
+pip -r requirements.txt
+```
+### Test single file with sample data
+```
+cd src
+```
+```
+python er_test.py
+```
+### How to use in the terminal (with input file)?
 ```
 python starter.py -i input.txt [output.txt] [-v]
 ```
