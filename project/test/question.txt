@@ -1,2 +1,0 @@
-question-001    Is Managua the capital of Nicaragua?
-question-002    Is Amsterdam the capital of Netherlands?
