@@ -165,10 +165,6 @@ class EntityRecognizer:
         else:
             priint("failed to access wiki content in search_wiki()...")
     
-    def search_and_score(self, entity:str, mention: str, candidates: dict, score: int) -> dict:
-        
-        pass
-
     def generate_candidate_by_WIKI(self, entity:str, limitation: int = 3, bonus_score: int=1):
         """
         Generate candidates by searching wiki in keywords "entity" and "entity + other entity" separately,
@@ -228,6 +224,9 @@ class EntityRecognizer:
         return candidate_dict
     
     def rank_other_ent_by_distances(self, word: str):
+        """
+        return the sorted entities(other than word) ordered by distances
+        """
         entity_dict = dict()
         word_index = int((self._entity_indices[word][1] + self._entity_indices[word][0])/2)
         for ent, value in self._entity_indices.items():
@@ -235,7 +234,7 @@ class EntityRecognizer:
                 continue
             cur_indx = int((self._entity_indices[ent][1] + self._entity_indices[ent][0])/2)
             entity_dict[ent] = abs(word_index - cur_indx)
-        return dict(sorted(entity_dict.items(), key = lambda item: item[1])) # return the sorted dict
+        return dict(sorted(entity_dict.items(), key = lambda item: item[1])) 
 
   
     def cal_jaccard(self, token_list1: list, token_list2: list) -> float:
@@ -264,15 +263,27 @@ class EntityRecognizer:
             print("error, failed to fetch wiki page.\n")
             return ''
 
+    def get_wiki_link_by_pageid(self, pageid: int):
+        link = "https://en.wikipedia.org/w/api.php?action=query&pageids=" + str(pageid) + \
+        "&format=json&formatversion=2&prop=info|extracts&inprop=url"
+        response = requests.Session().get(url = link)
+        if response.status_code == 200:
+            data = response.json()
+            return data['query']['pages'][0]['fullurl']
+        return ''
+
     def num_of_results(self, entity: str):
         headers = {'User-Agent': UserAgent().firefox}
-        #time.sleep(5)
+        #time.sleep()
         response = requests.get("https://www.google.com/search?q={}".format(entity.replace(" ", "+")), headers= headers)
-        if response.status_code == 200:
-            soup = BeautifulSoup(response.text, "lxml")
-            res = soup.find('div', {'id': 'result-stats'})
+
+        soup = BeautifulSoup(response.text, "lxml")
+        res = soup.find('div', {'id': 'result-stats'})
+        if res == None: # try agian  TODO
+            self.num_of_results(entity)
+        else:
             return int(res.text.replace(".", "").split()[1])
-        return None
+        
 
     def cal_coherence_ngd(self, w1: str, w2: str):
         # N = number of results("the")
@@ -287,15 +298,13 @@ class EntityRecognizer:
         else:
             return 0 
 
-    def rank_candidate(self, entity:str, candidates:dict, top_num: int=3):
+    def ranking_candidate(self, entity:str, candidates:dict, top_num: int=3):
         """
-        Principle of scoring (baseline = 1): TODO
-        1. entity name totally matches with wiki title:  + 3
-        2. if other entities matches with the disambiguation word: + 2 + x (based on the priority order)
-        3. if other entities in the entity title: + 1
-
-        def get_top_score_candidate(self, candidates:dict, top_num: int =3):
-        return sorted(candidates, cand['score'] for cand in candidates.values())
+        Principle of ranking :
+            1. Ranks in the wiki searching results (decremented) (0~1)
+                - Calculated by score/sum_of_score
+            2. Jaccord similarity (0~1): greater = better
+            3. Normalized Google Distance(>=0):if>=1: not relavant ; if ==0, perfect; smaller = better
         """
         if len(candidates) == 1:   # although the possibility is extremely low
             return candidates
@@ -308,6 +317,8 @@ class EntityRecognizer:
         last_score = 0
         
         ranked_candidates = dict()
+        sum_score = 0
+        weight_dict = dict()
         for pageid, item in candidates.items():
             if 'disambiguation' in item['title']:  # TODO  if scores are same
                 continue
@@ -322,31 +333,38 @@ class EntityRecognizer:
                 'ngd': ngd,
                 'score': item['score']
             }
-            # ngd >=1 : not relavant
-            # ngd = 0: perfect, smaller = better
-            # jaccord similarity: greater = better
+            sum_score += item['score']
 
-            #print( item['title'], ngd, jaccard_similarity)
+            weight_dict[pageid] = round((item['score']/sum_score) + (jaccard_similarity) + (1 - ngd), 2)
+    
             if last_score != item['score']:
                 last_score = item['score']
                 temp_num -= 1
 
             if temp_num == 0:
                 break
-        print(ranked_candidates)
-        #ranks = self.rank_other_ent_by_distances(entity)
-        #print(candidates)
-        
-        # original hit in entity text
-
-        #context-dependent features
+        weighted_dict = dict(sorted(weight_dict.items(), key = lambda item: item[1], reverse = True))
+        return ranked_candidates, weighted_dict
+    
+    def get_highest_weight_entity(self, entity: str, candidates: dict)-> dict:
+        """
+        Rank the candidates according their weights, return the highest one
+        return {'entity': entity_name, 'entity_link': entity_link}
+        """
+        ranked_candidates, weighted_dict = self.ranking_candidate(entity, candidates)
+        for k, v in weighted_dict.items():
+            entity_name = ranked_candidates[k]['title']
+            entity_link = self.get_wiki_link_by_pageid(k)
+            return {'entity': entity_name, 'entity_link': entity_link}
+        return {}
 
     def entity_linking(self):
         for item in self._entity_list:
             candidates = self.generate_candidate_by_WIKI(item['entity'])
-            #print(candidates)
-            self.rank_candidate(item['entity'], candidates)
+            verbose(candidates, self.is_verbosed)
+            res = self.get_highest_weight_entity(item['entity'], candidates)
+            verbose(res, self.is_verbosed)
 
-        pass
+        
     
     
