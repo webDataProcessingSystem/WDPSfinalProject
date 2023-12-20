@@ -9,15 +9,18 @@ from bs4 import BeautifulSoup
 import math
 from IOFunc import verbose
 import multiprocessing
+from fake_useragent import UserAgent
 
 MODEL_NAME = "en_core_web_trf" # trf
 wiki_url = "https://en.wikipedia.org/w/api.php"
 dbpedia_url = "http://dbpedia.org/sparql"
 stop_words = set(stopwords.words("english"))
 
+# threshold value for hit_score to filter out low related candidates
 THRESHOLD = 0.34
-
+# useless word contained in the entity title
 useless_word = ['disambiguation', 'list of']
+
 num_related_label = ['DATE','ORDINAL', 'CARDINAL', 'TIME', 'QUANTITY', 'MONEY', 'PERCENT']
 
 class EntityRecognizer:
@@ -39,10 +42,12 @@ class EntityRecognizer:
         self._doc = self._nlp(text)
         self._entity_list = []
         self._entity_indices = {}
+        self._disambugated_entities = []
     
     def get_context(self, sentence:str, entity:str) -> list:
         """
         Get the context(in the sentence, without entity) of the entity
+        return a list of context token of the entity
         """
         text_tokens = nltk.word_tokenize(sentence)
         entity_tokens = nltk.word_tokenize(entity)
@@ -53,8 +58,13 @@ class EntityRecognizer:
         return context
 
     def entity_extraction(self):
+        """
+        Named Entity Recognition:
+            - removed all repeated entites or synonymous entities
+            - number related mentions are dropped(to align with examples provided by the lecturer)
+            - meantime record the label/context/occurrence of the mentions
+        """
         verbose("### Starting entity_extraction for "+ self._q_id, self._is_verbosed)
-
         added_ents = set()
         for ent in self._doc.ents:
             drop_flag = False   # if drop_flag == True, ignore this entity
@@ -66,7 +76,6 @@ class EntityRecognizer:
                 if ele in entity_name or entity_name in ele:
                     drop_flag = True
                     break
-            
             if drop_flag == True:
                 continue
 
@@ -79,13 +88,13 @@ class EntityRecognizer:
             })
             added_ents.add(entity_name)
             self._entity_indices[entity_name] = [ent.start_char - ent.sent.start_char, ent.end_char - ent.sent.end_char]
-            #print(ent.text, context)
-            #print(ent.text, ent.sent)
-        #print(self._entity_list)
-        #return ents
-
 
     def search_wiki(self, word: str,  extension: str , limitation: int) -> list:
+        """
+        Search wikipedia to generate candidate entities for mention
+        :param extension: used to perform combinations of other entities
+        :param limiation: limitation on the number of returned value
+        """
         params = {
             'action': 'query',
             'format': 'json',
@@ -101,11 +110,11 @@ class EntityRecognizer:
         else:
             print("failed to access wiki content in search_wiki()...")
     
-    def generate_candidate_by_WIKI(self, entity:str, limitation: int = 3, bonus_score: int=1):
+    def generate_candidate_by_WIKI(self, entity:str, limitation: int = 3, bonus_score: int=1) ->dict:
         """
         Generate candidates by searching wiki in keywords "entity" and "entity + other entity" separately,
-        default grad the top 3 items(can set it as limitation), store top 3 items in each group in the candidates
-        returned the sorted candidates dict by score (descent order)
+            default grad the top 3 items(can set it as limitation), store top 3 items in each group in the candidates
+            returned the sorted candidates dict by score (descent order)
         """
         verbose("### Generate candidates for "+ self._q_id + ": [ " + entity +" ].. Please wait...", self._is_verbosed)
         candidates = {}
@@ -130,7 +139,7 @@ class EntityRecognizer:
         sorted_candidates = dict(sorted(candidates.items(), key = lambda item: item[1]['rank_score'], reverse = True))
         return sorted_candidates
 
-    def rank_other_ent_by_distances(self, word: str):
+    def rank_other_ent_by_distances(self, word: str) ->dict:
         """
         return the sorted entities(other than word) ordered by distances
         """
@@ -172,7 +181,10 @@ class EntityRecognizer:
             print("error, failed to fetch wiki page.\n")
             return ''
 
-    def get_wiki_link_by_pageid(self, pageid: int):
+    def get_wiki_link_by_pageid(self, pageid: int) -> str:
+        """
+        Query wikipedia by pageid to get the wiki link with entity name
+        """
         link = "https://en.wikipedia.org/w/api.php?action=query&pageids=" + str(pageid) + \
         "&format=json&formatversion=2&prop=info|extracts&inprop=url"
         response = requests.Session().get(url = link)
@@ -181,10 +193,9 @@ class EntityRecognizer:
             return data['query']['pages'][0]['fullurl']
         return ''
 
-
     def num_of_results(self, entity: str):
         """
-        [DROPPED] Not scalable features for None result returned from Google
+        [DROPPED] Not scalable features for None result returned from Google if frequently queried
         """
         headers = {'User-Agent': UserAgent().firefox}
         #time.sleep()
@@ -200,7 +211,7 @@ class EntityRecognizer:
 
     def cal_coherence_ngd(self, w1: str, w2: str):
         """
-        [DROPPED] Not scalable features for None result returned from Google
+        [DROPPED] Not scalable features for None result returned from Google if frequently queried
         """
         # N = number of results("the")
         N = 25270000000.0
@@ -215,6 +226,9 @@ class EntityRecognizer:
             return 0
 
     def cal_entity_hit(self, entity:str, other_entities:dict, candidate_title: str)-> int:
+        """
+        Calculate hit score of candidates (to filter out low related candidates)
+        """
         entity_token = word_tokenize(entity)
         #candidate_token = word_tokenize(entity)
         candidate_token = [w for w in word_tokenize(candidate_title) if w.lower() not in stop_words and w not in string.punctuation]
@@ -233,7 +247,7 @@ class EntityRecognizer:
         """
         Principle of ranking :
             1. Rank score in the wiki searching results (decremented) (0~1)
-                - Calculated by score/sum_of_score
+                - Calculated by rank_score/sum_of_score
             2. Jaccord similarity (0~1): greater = better
             3. Hit score(0~1): =hit_number/lenght_of_candidate, if hit score lower than threshold, ignore it
         """
@@ -284,7 +298,7 @@ class EntityRecognizer:
     def get_highest_weight_entity(self, entity: str, candidates: dict)-> dict:
         """
         Rank the candidates according their weights, return the highest one
-        return {'entity': entity_name, 'entity_link': entity_link}
+            return {'entity': entity_name, 'entity_link': entity_link}
         """
         ranked_candidates, weighted_dict = self.ranking_candidate(entity, candidates)
         verbose(">>>>>> Ranked candidates of " + entity, self._is_verbosed)
@@ -298,13 +312,22 @@ class EntityRecognizer:
         return {}
 
     def entity_linking(self):
-        #mp_manager = multiprocessing.Manager() # TODO
-        
+        """
+        Entity linking entrance function, called after entity_extraction()
+            Performed all functions for disambugation
+        """
         for item in self._entity_list:
             candidates = self.generate_candidate_by_WIKI(item['entity'])
-            #verbose(candidates, self._is_verbosed)
+            verbose(candidates, self._is_verbosed)
             res = self.get_highest_weight_entity(item['entity'], candidates)
             verbose(">>>>>> Disambiguated entity: ", self._is_verbosed)
             verbose(res, self._is_verbosed)
+            self._disambugated_entities.append(res)
 
-        
+    def return_disambiguated_entities(self) -> dict:
+        """
+        Shortcut function to get the disambiguated entities from text
+        """
+        self.entity_extraction()
+        self.entity_linking()
+        return  self._disambugated_entities
