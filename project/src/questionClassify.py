@@ -13,6 +13,7 @@ from nltk.tokenize import word_tokenize
 # disable the SettingWithCopyWarning
 pd.options.mode.chained_assignment = None  # default='warn'
 
+# Be-like words to help classify question category
 Be_words = ["is", "was", "be", "will", "are", "were", "has", "have", "had", "did", "do", "does", "whether", "can", "could", "would", "(y/n)", " (yes/no)"]
 
 class QuestionClassify:
@@ -34,7 +35,11 @@ class QuestionClassify:
             return 0
         else:
             return 1
-    def generate_prefix_column(self, row):
+
+    def generate_prefix_column(self, row) -> int:
+        """
+        Judging the start of the question
+        """
         tokens = word_tokenize(row['Question']) if 'Question' in row else  word_tokenize(row)
         if len(tokens) >= 1 and tokens[0].lower() in Be_words:
             return 0
@@ -42,9 +47,11 @@ class QuestionClassify:
             return 1
 
     def train_model(self):
+        """
+        Using SVM to train the model
+        """
         self._qn_df_sub.loc[:, 'Category'] = self._qn_df_sub.apply(self.generate_category_column, axis = 1)
         self._qn_df_sub.loc[:, 'Prefix'] = self._qn_df_sub.apply(self.generate_prefix_column, axis = 1)
-        #print(self._qn_df_sub)
         self._qn_df_sub = self._qn_df_sub[self._qn_df_sub['Question'].notnull()]
         self._vect = TfidfVectorizer(ngram_range = (2, 2)).fit(self._qn_df_sub['Question'])
         # Train test split
@@ -77,26 +84,19 @@ class QuestionClassify:
         print(accuracy_score(b['pred'], b['actual']))
 
     def process_question(self, question: str) -> str:
+        """
+        Preprocess question
+        """
         result = re.sub(r'[^a-zA-Z]', ' ', question)
         return result.lower()
 
-    def classify_question(self, question: str):
+    def classify_question(self, question: str) -> int:
+        """
+        Main function to perform the question classification
+        """
         X = [self.process_question(question)] 
         question_vec = self._vect.transform(X)
         question_pred = self._model1.predict(question_vec)
     
         manual_result = self.generate_prefix_column(question)
-        if question_pred[0] == manual_result:
-            return question_pred[0]
-        else:
-            return manual_result  # TODO
-
-
-"""
-sample_question = [{'q_id': 'question-001', 'question': 'Is Managua the capital of Nicaragua?'}, \
-{'q_id': 'question-002', 'question': 'the capital of nicaragua is...'}]
-qc = QuestionClassify()
-q_list = get_input("../test/question.txt", True)
-for q in q_list:
-    print(qc.classify_question(q['question']))#, qc.generate_prefix_column(q['question'])
-"""
+        return question_pred[0] if question_pred[0] == manual_result else manual_result 
