@@ -37,6 +37,7 @@ using -v to show the running information, output is in the test/output.txt if no
 ```
 python starter.py -i question.txt [output.txt] -v
 ```
+## File Structure
 ----wdps2\ <br />
 &emsp;&emsp;|----requirements.txt  
 &emsp;&emsp;|----starter.py <br /> 
