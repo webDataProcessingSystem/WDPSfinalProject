@@ -63,7 +63,7 @@ def pipeline(q_id:str, question: str, is_verbosed: bool, outpath:str = default_o
     verbose("### Raw answer by LLM:\n " + str(raw_answer), is_verbosed)
     verbose("### ------- Start processing " + q_id + ": " + question , is_verbosed)
     ansExt = answer_extraction()  # EntityRecognizer called in answer_extraction
-    ans_and_entities = ansExt.load_model(question, raw_answer)  # return answer and entity list
+    ans_and_entities = ansExt.load_model(question, raw_answer, is_verbosed)  # return answer and entity list
    
     queClassifier = QuestionClassify()
     queCategory = queClassifier.classify_question(question)
