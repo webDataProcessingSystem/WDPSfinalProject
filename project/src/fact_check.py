@@ -1,4 +1,5 @@
 import requests
+#from questionClassify import QuestionClassify
 import spacy
 
 nlp = spacy.load("en_core_web_sm")
@@ -63,3 +64,14 @@ def verify_answer_with_wikipedia(question, user_answer):
 # user_answer = "no"
 # print(verify_yes_no_answer_with_wikipedia(question, user_answer))  # output: True or False
 
+"""
+sample_question = [{'q_id': 'question-001', 'question': 'Is Managua the capital of Nicaragua?', 'user_answer': 'yes'}, \
+{'q_id': 'question-002', 'question': 'the capital of nicaragua is...', 'user_answer': 'Managua'}]
+
+qc = QuestionClassify()
+for item in sample_question:
+    if qc.classify_question(item['question']) == 0:
+        print(verify_yes_no_answer_with_wikipedia(item['question'], item['user_answer']))
+    else:
+        print(verify_answer_with_wikipedia(item['question'], item['user_answer']))
+"""

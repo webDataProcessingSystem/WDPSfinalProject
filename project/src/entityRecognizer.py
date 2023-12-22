@@ -7,11 +7,11 @@ from SPARQLWrapper import SPARQLWrapper, JSON
 import requests
 from bs4 import BeautifulSoup
 import math
-from IOFunc import verbose
+#from IOFunc import verbose
 import multiprocessing
 from fake_useragent import UserAgent
 
-MODEL_NAME = "en_core_web_trf" # trf
+MODEL_NAME = "en_core_web_sm" # trf
 wiki_url = "https://en.wikipedia.org/w/api.php"
 dbpedia_url = "http://dbpedia.org/sparql"
 stop_words = set(stopwords.words("english"))
@@ -22,7 +22,13 @@ THRESHOLD = 0.34
 useless_word = ['disambiguation', 'list of']
 
 num_related_label = ['DATE','ORDINAL', 'CARDINAL', 'TIME', 'QUANTITY', 'MONEY', 'PERCENT']
-
+def verbose(text: str, is_verbosed: bool):
+    """
+    If is_verbosed is set, print the text in the terminal
+    """
+    if is_verbosed:
+        print(text)
+        
 class EntityRecognizer:
     """
     Steps:
@@ -323,6 +329,7 @@ class EntityRecognizer:
             verbose(">>>>>> Disambiguated entity: ", self._is_verbosed)
             verbose(res, self._is_verbosed)
             self._disambugated_entities.append(res)
+        return self._disambugated_entities
 
     def return_disambiguated_entities(self) -> dict:
         """

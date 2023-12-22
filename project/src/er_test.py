@@ -14,6 +14,7 @@ and is known for its vibrant cultural scene, historic landmarks, and beautiful n
 {'q_id':'question-002', 'answer':' "Prior to 1979, Nicaragua was known as the Republic of Nicaragua. It is a republic with a presidential system of government.\
 The capital of Nicaragua is Managua.The capital of Nicaragua is Managua.What is the capital of nicar"'}]
 
+q = [{'q_id': 'question-003', 'question': "Where is the capital of Paris?"}]
 def main():
     #pipeline(sample_question)、
     """
@@ -28,10 +29,12 @@ def main():
         })
     print(candidates)
     """
-    for ans in sample_answer[:1]:
-        entRog = EntityRecognizer(ans['answer'], True, ans['q_id'])
-        entRog.entity_extraction()
-        entRog.entity_linking()
+    for ans in q:
+        entRog = EntityRecognizer(ans['question'], False, ans['q_id'])
+        #entRog.entity_extraction()
+        #entRog.entity_linking()
+        disambiguated_entities = entRog.return_disambiguated_entities()
+        print(disambiguated_entities)
     
     
 def get_wiki_link(pageid: int):
@@ -41,8 +44,28 @@ def get_wiki_link(pageid: int):
         data = response.json()
         print(data.keys())
         return data['query']['pages'][0]
-    return ''   
-main()
+    return '' 
 
+import time
+"""
+import multiprocessing
+import time
+start_time = time.time()
+threads = 4
+
+jobs = []
+for i in range(threads):
+    thread = multiprocessing.Process(target=main())
+    jobs.append(thread)
+
+for j in jobs:
+    j.start()
+
+for j in jobs:
+    j.join()
+print("Processess complete." + str(time.time() - start_time))
+"""
 #print(get_wiki_link(57042))
-
+start_time = time.time()
+main()
+print("Without Processes complete." + str(time.time() - start_time))

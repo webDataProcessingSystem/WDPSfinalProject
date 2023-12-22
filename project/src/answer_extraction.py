@@ -3,89 +3,79 @@ import json
 import pandas as pd
 import numpy as np
 from transformers import AutoModelForQuestionAnswering, TrainingArguments, Trainer
-from transformers import DefaultDataCollator
-import entityRecognizer 
-import answer_yes_no
+from transformers import DefaultDataCollator, AutoModel
+from src.entityRecognizer import EntityRecognizer 
 import torch
-import questionClassify
+from src.questionClassify import QuestionClassify
+from datetime import datetime
 
+# paths defines here
 tokenizer = AutoTokenizer.from_pretrained("distilbert-base-uncased")
-train=pd.read_csv(r"D:\DZLY6\P2\WEB\dataset\WDPS_TRAIN.CSV")
-test=pd.read_csv(r"D:\DZLY6\P2\WEB\dataset\WDPS_TEST.CSV")
-model_path = "D:\DZLY6\P2\WEB\model_distilbert_uncased"
-model_save_path="D:\DZLY6\P2\WEB\model_save"
+train=pd.read_csv("./data/WDPS_TRAIN.CSV")
+test=pd.read_csv("./data/WDPS_TEST.CSV")
+model_path = "./model/model_distilbert_uncased"
+model_save_path="./model/mode_answer_ex_save"
 
 class answer_extraction:
     
-    def __init__(self,question,raw_answer):
-        self.question=question
-        self.raw_answer=raw_answer
+    def __init__(self):
         self.model_path=model_path
         self.train=train
         self.tokenizer=tokenizer
         self.test=test
         self.model_save_path=model_save_path
-        self.load_model(question,raw_answer)
+        #self.load_model(question,raw_answer)
        
-
-    def load_model(self,question,raw_answer):
-        print("###Answer Extraction Model Loading...")
-        qc=questionClassify.QuestionClassify()
-        type=qc.classify_question(question)
+    def load_model(self, question:str, raw_answer:str):
+        qc=QuestionClassify()
+        type_q=qc.classify_question(question)
         answer=""
-        #if it is yes-no question
-        if type==0:
-            print("###It is yes-no question...")
-            # berttokenizer, bert = answer_yes_no.load_bert()
-            # answer=answer_yes_no.answer_yes_no_question(question, bert, berttokenizer)
+            
+        if type_q==0:    #if it is yes-no question
             #check logic
             if self.is_affirmative_answer(raw_answer):
                 answer="yes"
             else:
                 answer="no"
            
-        #if it is entity question
-        else:
-            print("###It is enetity answer question...")
-            
-            #try to load model
-            try:
-                model = AutoModelForQuestionAnswering.from_pretrained(self.model_save_path)
-                # check if model is successfully loaded
-               
-                print("model is successfully loaded.")
-                answer=self.load_and_predict(model,question,raw_answer,self.model_save_path)
-               
-                    
-            except Exception as e:
-                # if model is not loaded, train and predict
-                print("model is training.")
-                answer=self.train_and_predict(question,self.model_save_path,raw_answer)
-            #double extraction
-            entRog=entityRecognizer.EntityRecognizer(question,False,'question--test')
-            disambiguationquestion=entRog.return_disambiguated_entities()
-            entitiesquestion = [item['entity'] for item in disambiguationquestion]
-            enRogAn=entityRecognizer.EntityRecognizer(raw_answer,False,'question--test')
-            disambiguationanswer=enRogAn.return_disambiguated_entities()
-            entitiesanswer = [item['entity'] for item in disambiguationanswer]
-            #check if answer is in question
-            answer_in_entities = any(answer.lower() == entity.lower() for entity in entitiesquestion)
+        else:  #if it is entity question
+            model = AutoModelForQuestionAnswering.from_pretrained(self.model_save_path)
+            # check if model is successfully loaded
+            answer=self.load_and_predict(model,question,raw_answer,self.model_save_path)           
+        
+        entRog=EntityRecognizer(question,False,'question--test')
+        disambiguationquestion=entRog.return_disambiguated_entities()
+        entitiesquestion = [item['entity'] for item in disambiguationquestion]
+        enRogAn=EntityRecognizer(raw_answer,False,'question--test')
+
+        disambiguationanswer=enRogAn.return_disambiguated_entities()
+        entitiesanswer = [item['entity'] for item in disambiguationanswer]
+        #check if answer is in question
+        answer_in_entities = any(answer.lower() == entity.lower() for entity in entitiesquestion)
         #if model's answer is included in question
-            if answer_in_entities:
-                answer=entitiesanswer[0]
-       
-            entitiesanswer_in_entities = any(entitiesanswer[0].lower() == entity.lower() for entity in entitiesquestion)
-         #if entity answer is not included in question
-            if entitiesanswer_in_entities is False:
-                answer=entitiesanswer[0]                                 
-        print("Answer is: " + answer)
-        print("###Answer Extraction Model Loading Finished...")
-                          
-        return answer
+        if answer_in_entities:
+            answer=entitiesanswer[0]
+    
+        entitiesanswer_in_entities = any(entitiesanswer[0].lower() == entity.lower() for entity in entitiesquestion)
+        #if entity answer is not included in question
+        if entitiesanswer_in_entities is False:
+            answer=entitiesanswer[0]                                
+        
+        # merge the entities into a list and remove repeated ones
+        disambiguationquestion.extend(disambiguationanswer)
+        entites_list = []
+        added_entities = []
+        for ele in disambiguationquestion:
+            if ele['entity'] not in added_entities:
+                entites_list.append(ele)
+                added_entities.append(ele['entity'])
+
+            #print(entites_list)
+        
+        result_dict = {'answer': answer, 'entities': entites_list}
+        return result_dict
         
     def load_and_predict(self, model, question, raw_answer, model_save_path):
-        tokenizer = tokenizer
-        question = question
         context = raw_answer
         inputs = tokenizer.encode_plus(question, context, add_special_tokens=True, return_tensors="pt")
         answer=""
@@ -93,25 +83,20 @@ class answer_extraction:
         with torch.no_grad():
             outputs = model(**inputs)
 
-    # decode
+            # decode
             start_index = torch.argmax(outputs.start_logits)
             end_index = torch.argmax(outputs.end_logits) + 1
             answer = tokenizer.convert_tokens_to_string(tokenizer.convert_ids_to_tokens(inputs['input_ids'][0][start_index:end_index]))
 
         return answer
 
-
     def train_and_predict(self,question,model_save_path,raw_answer):
             self.traindata=self.preprocess_function(train)
             self.testdata=self.preprocess_function(test)
-        
-
             self.data_collator = DefaultDataCollator()
-
             self.train_dataset = [dict(zip(self.traindata,t)) for t in zip(*self.traindata.values())]
             self.test_dataset = [dict(zip(self.testdata,t)) for t in zip(*self.testdata.values())]
-
-            
+     
             self.model = AutoModelForQuestionAnswering.from_pretrained(self.model_path)
 
             trainer= self.trainmodel(self.model,self.train_dataset,self.test_dataset,self.data_collator)
@@ -126,9 +111,6 @@ class answer_extraction:
             predictions = trainer.predict(test_dataformate)
             answers = self.get_predictions(test_dataformate, predictions)
             
-           
-        
-           
             return answers[0]
 
 
@@ -176,17 +158,10 @@ class answer_extraction:
             else:
                 start_positions.append(token_start_index)
                 end_positions.append(token_end_index)
-            #debug
-            # print(f"Row{i}  - GenAnswer: {gen_answers[i]}")
-            # print(f"Row {i} - Answer: {answer}")
-            # print(f"Row {i} - Start char: {start_char}, End char: {end_char}")
-            # print(f"Row {i} - Token start: {token_start_index}, Token end: {token_end_index}")
-
+           
         inputs["start_positions"] = start_positions
         inputs["end_positions"] = end_positions
-
         return inputs
-
 
     def trainmodel(self,model,train_dataset,test_dataset,data_collator):
         training_args = TrainingArguments(
@@ -218,18 +193,12 @@ class answer_extraction:
             "weight_decay": training_args.weight_decay
         }
         #record current time
-        from datetime import datetime
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         training_params["timestamp"] = current_time
-
 
         #save training arguments
         with open("training_process.json", "w") as file:
             json.dump(training_params, file, indent=4)
-
-        #print training arguments   
-        # print("Training parameters:")
-        # print(json.dumps(training_args, indent=4))
 
         train_output=trainer.train()
         train_results = {
@@ -245,13 +214,9 @@ class answer_extraction:
         # print training results
         print("Training results:")
         print(json.dumps(train_results, indent=4))
-        self.model.save_pretrained(self.model_save_path)
+        trainer.save_model(self.model_save_path)
         return trainer
   
-   
-
-
-
     def get_predictions(self,test_dataset, predictions):
         # get the predicted answer for each sample in the test dataset
         start_logits, end_logits = predictions.predictions
@@ -273,26 +238,11 @@ class answer_extraction:
             answers.append(answer)
         print(answers)
         return answers
-
-   
-    
-    def is_affirmative_answer(answer):
+  
+    def is_affirmative_answer(self, answer):
         affirmative_words = ["yes", "true", "correct", "absolutely", "certainly"]
         return any(word in answer.lower() for word in affirmative_words)
 
-
-
-  
-
-
-
-
-#for test
-# question = "Is paris the capital of France?"
-# answer1="No."
-# question = "Where is the capital of Paris?"
-# answer1="Managua is the capital city of Paris."
-# answer_extraction(question,answer1)
 
        
 

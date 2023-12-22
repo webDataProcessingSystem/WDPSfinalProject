@@ -3,6 +3,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.svm import SVC
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics import accuracy_score
+from transformers import AutoModel
 import pickle
 import os
 import re
@@ -12,17 +13,21 @@ from nltk.tokenize import word_tokenize
 
 # disable the SettingWithCopyWarning
 pd.options.mode.chained_assignment = None  # default='warn'
+qc_model_path = "./model/model_qc"
 
-# Be-like words to help classify question category
 Be_words = ["is", "was", "be", "will", "are", "were", "has", "have", "had", "did", "do", "does", "whether", "can", "could", "would", "(y/n)", " (yes/no)"]
 
 class QuestionClassify:
     def __init__(self):
-        qn_df = pd.read_csv('../data/WDPS_GENDATASET.csv')
+        qn_df = pd.read_csv('./data/WDPS_GENDATASET.csv')
         qn_df = qn_df.iloc[:,:]
         qn_df['Question'] = qn_df['Question'].str[17:]
         self._qn_df_sub = qn_df[['Question', 'Answer']]
-        self.train_model()
+        try:
+            with open(qc_model_path, 'rb') as f:
+                self._model = pickle.load(f) 
+        except Exception as e:
+            self._model = self.train_model()
     
     def generate_category_column(self, row):
         """
@@ -82,6 +87,10 @@ class QuestionClassify:
         a['max_prob'] = max_prob
         b = a[a['pred'] != -1]
         print(accuracy_score(b['pred'], b['actual']))
+        with open(qc_model_path, 'wb') as f:   # save model
+            pickle.dump(self._model1, f)
+
+        return model
 
     def process_question(self, question: str) -> str:
         """
@@ -93,10 +102,11 @@ class QuestionClassify:
     def classify_question(self, question: str) -> int:
         """
         Main function to perform the question classification
-        """
+        """ 
         X = [self.process_question(question)] 
-        question_vec = self._vect.transform(X)
-        question_pred = self._model1.predict(question_vec)
+        vect = TfidfVectorizer(ngram_range = (2, 2)).fit(self._qn_df_sub['Question'])
+        question_vec = vect.transform(X)
+        question_pred = self._model.predict(question_vec)
     
         manual_result = self.generate_prefix_column(question)
         return question_pred[0] if question_pred[0] == manual_result else manual_result 
