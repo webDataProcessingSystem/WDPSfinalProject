@@ -20,10 +20,37 @@ This is a pratical assignmnet for Web Data Processing Systems course.
 > Managua<TAB>https://en.wikipedia.org/wiki/Managua <br />
 > President's office<TAB>https://en.wikipedia.org/wiki/President_of_Nicaragua <br />
 > National Assembly<TAB>https://en.wikipedia.org/wiki/National_Assembly_(Nicaragua) <br />
-## Usage of this problem
+## Usage of this program (with Docker)
+### Docker pull
+```
+docker pull cedar3/wdps:team11
+```
+### Run docker image
+```
+docker run -it cedar3/wdps
+```
+### Copy an input file into the Docker container
+```
+docker cp <yourinputfile> <container_id>:/cedar3/input.txt
+```
+### After running the docker image, just run
+```
+python starter.py -i input.txt [-o output.txt] [-v]
+```
+[-o output.txt] is an optional command to specify the output filename <br />
+[-v] is a tag to specify whether showing the extra running information in the terminal
+## Usage of this program (without Docker)
+LLM used is accessible at https://huggingface.co/TheBloke/GEITje-7B-chat-GGUF/blob/main/geitje-7b-chat.Q4_K_M.gguf <br />
+Models can be downloaded at https://drive.google.com/file/d/1dBRk3_5WRQmX9AQmOIhiu75xAHuKTZ9v/view?usp=sharing. <br />
+After git clone, just run
 ### Installation
 ```
 pip -r requirements.txt
+```
+### How to use in terminal?
+using -v to show the running information, output is in the test/output.txt if not specified
+```
+python starter.py -i question.txt [output.txt] -v
 ```
 ### Test single file with sample data
 ```
@@ -31,11 +58,6 @@ cd src
 ```
 ```
 python er_test.py
-```
-### How to use in terminal?
-using -v to show the running information, output is in the test/output.txt if not specified
-```
-python starter.py -i question.txt [output.txt] -v
 ```
 ## File Structure
 ----wdps2\ <br />
