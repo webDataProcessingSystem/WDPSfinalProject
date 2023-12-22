@@ -26,7 +26,7 @@ class answer_extraction:
         self.model_save_path=model_save_path
         #self.load_model(question,raw_answer)
        
-    def load_model(self, question:str, raw_answer:str):
+    def load_model(self, question:str, raw_answer:str, is_verbosed: bool):
         qc=QuestionClassify()
         type_q=qc.classify_question(question)
         answer=""
@@ -43,10 +43,10 @@ class answer_extraction:
             # check if model is successfully loaded
             answer=self.load_and_predict(model,question,raw_answer,self.model_save_path)           
         
-        entRog=EntityRecognizer(question,False,'question--test')
+        entRog=EntityRecognizer(question,is_verbosed,'question--test')
         disambiguationquestion=entRog.return_disambiguated_entities()
         entitiesquestion = [item['entity'] for item in disambiguationquestion]
-        enRogAn=EntityRecognizer(raw_answer,False,'question--test')
+        enRogAn=EntityRecognizer(raw_answer,is_verbosed,'question--test')
 
         disambiguationanswer=enRogAn.return_disambiguated_entities()
         entitiesanswer = [item['entity'] for item in disambiguationanswer]
@@ -243,9 +243,3 @@ class answer_extraction:
         affirmative_words = ["yes", "true", "correct", "absolutely", "certainly"]
         return any(word in answer.lower() for word in affirmative_words)
 
-
-       
-
-
-
-    
