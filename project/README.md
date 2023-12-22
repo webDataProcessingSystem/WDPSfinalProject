@@ -31,7 +31,7 @@ docker run -it cedar3/wdps
 ```
 ### Copy an input file into the Docker container
 ```
-docker cp <yourinputfile> <container_id>:/cedar3/input.txt
+docker cp <yourinputfile> <container_id>:/wdps2/test/input.txt
 ```
 ### After running the docker image, just run
 ```
@@ -80,4 +80,10 @@ python er_test.py
 &emsp;&emsp;|&emsp;&emsp;|----answer_extraction.py <br />
 &emsp;&emsp;|&emsp;&emsp;|----IOFunc.py <br />
 &emsp;&emsp;|&emsp;&emsp;|----io_test.py <br />
-&emsp;&emsp;|&emsp;&emsp;|----entityRecognizer.py
+&emsp;&emsp;|&emsp;&emsp;|----entityRecognizer.py <br />
+&emsp;&emsp;|----llm\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----llama-2-7b-chat.Q4_K_M.gguf <br />
+&emsp;&emsp;|----model\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----model_qc <br />
+&emsp;&emsp;|&emsp;&emsp;|----model_distilbert_uncased <br />
+&emsp;&emsp;|&emsp;&emsp;|----mode_answer_ex_save <br />
