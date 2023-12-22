@@ -38,7 +38,9 @@ docker cp <yourinputfile> <container_id>:/wdps2/test/input.txt
 python starter.py -i input.txt [-o output.txt] [-v]
 ```
 `-o output.txt` is an optional command to specify the output filename <br />
-`-v` is an optional tag to specify whether showing the extra running information in the terminal
+`-v` is an optional tag to specify whether showing the extra running information in the terminal  <br />
+'output.txt' will be placed under the 'test' directory.
+
 ## Usage of this program (without Docker)
 LLM used is accessible at https://huggingface.co/TheBloke/GEITje-7B-chat-GGUF/blob/main/geitje-7b-chat.Q4_K_M.gguf <br />
 Models can be downloaded at https://drive.google.com/file/d/1dBRk3_5WRQmX9AQmOIhiu75xAHuKTZ9v/view?usp=sharing. <br />
