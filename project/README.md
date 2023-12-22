@@ -27,7 +27,7 @@ docker pull cedar3/wdps:team11
 ```
 ### Run docker image
 ```
-docker run -it cedar3/wdps
+docker run -it cedar3/wdps:team11
 ```
 ### Copy an input file into the Docker container
 ```
