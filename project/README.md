@@ -37,25 +37,24 @@ using -v to show the running information, output is in the test/output.txt if no
 ```
 python starter.py -i question.txt [output.txt] -v
 ```
-## File Structure
-----wdps2\
-    |----requirements.txt
-    |----test\
-    |    |----question.txt
-    |    |----output.txt
-    |----Dockerfile
-    |----README.md
-    |----data\
-    |    |----WDPS_GENDATASET.CSV
-    |    |----WDPS_TEST.CSV
-    |    |----WDPS_TRAIN.CSV
-    |----starter.py
-    |----src\
-    |    |----questionClassify.py
-    |    |----fact_check.py
-    |    |----qc_test.py
-    |    |----er_test.py
-    |    |----answer_extraction.py
-    |    |----IOFunc.py
-    |    |----io_test.py
-    |    |----entityRecognizer.py
+----wdps2\ <br />
+&emsp;&emsp;|----requirements.txt  
+&emsp;&emsp;|----starter.py <br /> 
+&emsp;&emsp;|----Dockerfile <br />
+&emsp;&emsp;|----README.md <br />
+&emsp;&emsp;|----test\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----question.txt <br />
+&emsp;&emsp;|&emsp;&emsp;|----output.txt <br />
+&emsp;&emsp;|----data\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----WDPS_GENDATASET.CSV <br />
+&emsp;&emsp;|&emsp;&emsp;|----WDPS_TEST.CSV <br />
+&emsp;&emsp;|&emsp;&emsp;|----WDPS_TRAIN.CSV <br />
+&emsp;&emsp;|----src\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----questionClassify.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----fact_check.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----qc_test.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----er_test.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----answer_extraction.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----IOFunc.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----io_test.py <br />
+&emsp;&emsp;|&emsp;&emsp;|----entityRecognizer.py
