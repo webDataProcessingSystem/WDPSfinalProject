@@ -42,17 +42,17 @@ python starter.py -i input.txt [-o output.txt] [-v]
 ## Usage of this program (without Docker)
 LLM used is accessible at https://huggingface.co/TheBloke/GEITje-7B-chat-GGUF/blob/main/geitje-7b-chat.Q4_K_M.gguf <br />
 Models can be downloaded at https://drive.google.com/file/d/1dBRk3_5WRQmX9AQmOIhiu75xAHuKTZ9v/view?usp=sharing. <br />
-After git clone, just run
+After `git clone`, just run
 ### Installation
 ```
 pip -r requirements.txt
 ```
-### How to use in terminal?
+### Run program by using the example input file 'question.txt'
 using -v to show the running information, output is in the test/output.txt if not specified
 ```
 python starter.py -i question.txt [output.txt] -v
 ```
-### Test single file with sample data
+### If need single test with sample data for a specific python file, run
 ```
 cd src
 ```
