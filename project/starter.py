@@ -2,6 +2,10 @@ import os
 from argparse import ArgumentParser
 import argparse
 from src.IOFunc import get_input, verbose, pipeline
+from src.entityRecognizer import EntityRecognizer
+from src.answer_extraction import answer_extraction
+from src.questionClassify import QuestionClassify
+import src.fact_check
 
 if __name__ == "__main__":
     parser = ArgumentParser(
@@ -20,7 +24,7 @@ if __name__ == "__main__":
     for q in q_list:
         pipeline(q['q_id'], q['question'], args.verbose)
 
-    print(q_list)
+    #print(q_list)
     
     
 
