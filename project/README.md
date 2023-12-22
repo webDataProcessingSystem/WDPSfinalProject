@@ -87,3 +87,9 @@ python er_test.py
 &emsp;&emsp;|&emsp;&emsp;|----model_qc <br />
 &emsp;&emsp;|&emsp;&emsp;|----model_distilbert_uncased <br />
 &emsp;&emsp;|&emsp;&emsp;|----mode_answer_ex_save <br />
+&emsp;&emsp;|----datasetprocess\ <br />
+&emsp;&emsp;|&emsp;&emsp;|----clean_trainOWN <br />
+&emsp;&emsp;|&emsp;&emsp;|----dataset <br />
+&emsp;&emsp;|&emsp;&emsp;|----preparedataset <br />
+&emsp;&emsp;|&emsp;&emsp;|----split_dataset <br />
+&emsp;&emsp;|&emsp;&emsp;|----mode_answer_ex_save <br />
