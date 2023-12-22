@@ -32,7 +32,30 @@ cd src
 ```
 python er_test.py
 ```
-### How to use in the terminal (with input file)?
+### How to use in terminal?
+using -v to show the running information, output is in the test/output.txt if not specified
 ```
-python starter.py -i input.txt [output.txt] [-v]
+python starter.py -i question.txt [output.txt] -v
 ```
+## File Structure
+----wdps2\
+    |----requirements.txt
+    |----test\
+    |    |----question.txt
+    |    |----output.txt
+    |----Dockerfile
+    |----README.md
+    |----data\
+    |    |----WDPS_GENDATASET.CSV
+    |    |----WDPS_TEST.CSV
+    |    |----WDPS_TRAIN.CSV
+    |----starter.py
+    |----src\
+    |    |----questionClassify.py
+    |    |----fact_check.py
+    |    |----qc_test.py
+    |    |----er_test.py
+    |    |----answer_extraction.py
+    |    |----IOFunc.py
+    |    |----io_test.py
+    |    |----entityRecognizer.py
