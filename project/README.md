@@ -37,8 +37,8 @@ docker cp <yourinputfile> <container_id>:/cedar3/input.txt
 ```
 python starter.py -i input.txt [-o output.txt] [-v]
 ```
-[-o output.txt] is an optional command to specify the output filename <br />
-[-v] is an optional tag to specify whether showing the extra running information in the terminal
+`-o output.txt` is an optional command to specify the output filename <br />
+`-v` is an optional tag to specify whether showing the extra running information in the terminal
 ## Usage of this program (without Docker)
 LLM used is accessible at https://huggingface.co/TheBloke/GEITje-7B-chat-GGUF/blob/main/geitje-7b-chat.Q4_K_M.gguf <br />
 Models can be downloaded at https://drive.google.com/file/d/1dBRk3_5WRQmX9AQmOIhiu75xAHuKTZ9v/view?usp=sharing. <br />
@@ -48,7 +48,7 @@ After `git clone`, just run
 pip -r requirements.txt
 ```
 ### Run program by using the example input file 'question.txt'
-using -v to show the running information, output is in the test/output.txt if not specified
+using `-v` to show the running information, output is in the test/output.txt if not specified
 ```
 python starter.py -i question.txt [output.txt] -v
 ```
