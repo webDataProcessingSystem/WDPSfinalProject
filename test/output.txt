@@ -1,0 +1,57 @@
+question-001	R"Where is Managua located?
+What is the population of Managua?
+Managua History:
+Is Managua worth visiting?
+How to get to Managua?
+Things to do in Managua:
+Managua Nightlife:
+Managua Cuisine:
+Managua Shopping:
+Managua Accommodation:
+Managua Transportation:
+Managua Weather:
+Managua Tourist Attractions:
+Managua Activities:
+What are some popular activities to do in Managua?
+Managua Travel Tips:
+Managua Safety:
+Managua Language:
+Managua Currency:
+Managua Time Zone:
+Managua Distance from Major Cities:
+How far is it from San Jose Costa Rica to Managua Nicaragua?
+How far is it from Guatemala City to Managua Nicaragua?
+How far is it from Panama City to Managua Nicaragua?
+How far is it from Mexico City to Managua Nicaragua?
+Managua Map:
+Managua Location on the World Map:
+Managua Google Maps:
+Managua Satellite Images:
+Managua Street Views:
+Managua"
+question-001	A"no"
+question-001	C"corret"
+question-001	E"Managua"	"https://en.wikipedia.org/wiki/Managua"
+question-001	E"Nicaragua"	"https://en.wikipedia.org/wiki/Nicaragua"
+question-001	E"San Jos¨¦, Costa Rica"	"https://en.wikipedia.org/wiki/San_Jos%C3%A9,_Costa_Rica"
+question-001	E"Costa Rica national football team"	"https://en.wikipedia.org/wiki/Costa_Rica_national_football_team"
+question-001	E"Guatemala City"	"https://en.wikipedia.org/wiki/Guatemala_City"
+question-001	E"Panama City"	"https://en.wikipedia.org/wiki/Panama_City"
+question-001	E"Mexico City"	"https://en.wikipedia.org/wiki/Mexico_City"
+question-002	R"Yes, Amsterdam is the capital and largest city of the Netherlands. Located in the province of North Holland, Amsterdam has been the country's capital since 1588 and is home to many important government buildings, including the Binnenhof, the Dutch parliament building, and the Royal Palace on Dam Square. The city is also known for its vibrant culture, rich history, and beautiful canals, making it a popular tourist destination."
+question-002	A"yes"
+question-002	C"incorrect"
+question-002	E"Amsterdam"	"https://en.wikipedia.org/wiki/Amsterdam"
+question-002	E"Netherlands"	"https://en.wikipedia.org/wiki/Netherlands"
+question-002	E"North Holland"	"https://en.wikipedia.org/wiki/North_Holland"
+question-002	E"Binnenhof"	"https://en.wikipedia.org/wiki/Binnenhof"
+question-002	E"Holland"	"https://en.wikipedia.org/wiki/Holland"
+question-002	E"Royal Palace of Amsterdam"	"https://en.wikipedia.org/wiki/Royal_Palace_of_Amsterdam"
+question-003	R"No, India has more people than China.
+
+India is currently home to approximately 1.37 billion people, while China has a population of around 1.43 billion people. This means that India has more people than China by about 60 million individuals.
+It's worth noting that both countries are experiencing rapid population growth and are expected to continue doing so in the coming years. However, based on current trends and data, India has a slight edge over China when it comes to having the most people in the world."
+question-003	A"India"
+question-003	C"incorrect"
+question-003	E"China"	"https://en.wikipedia.org/wiki/China"
+question-003	E"India"	"https://en.wikipedia.org/wiki/India"
